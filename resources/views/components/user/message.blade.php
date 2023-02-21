@@ -6,8 +6,10 @@
         ->get();
     
     if (count($pesans) < 1) {
+        $class = null;
         $info_pesan = 'Tidak Ada Pesan';
     } elseif (count($pesans) > 3) {
+        $class = 'notification-item';
         $info_pesan = 'Ada Banyak Pesan';
     } else {
         null;
@@ -46,7 +48,7 @@
     @endforeach
 @else
     <a href="{{ route('user.pesan_masuk') }}">
-        <button class="dropdown-item" type="button">
+        <button class="dropdown-item {{ isset($class) ? $class : '' }}" type="button">
             {{ $info_pesan }}
         </button></a>
 @endif

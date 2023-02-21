@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\View;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Buku;
@@ -10,35 +10,50 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class Pengembalian extends Controller
+class APIPengembalianController extends Controller
 {
-    public function show_pengembalian()
+    public function get($id = null)
     {
-        $datas = Peminjaman::where('user_id', Auth::user()->id)->where('done', true)->get();
-
-        return view('user.pengembalian.pengembalian', compact('datas'));
+        if (isset($id)) {
+            $pengembalian =  Peminjaman::where(['user_id' => $id, 'done' => true])->get();
+            if (count($pengembalian)) {
+                return response()->json([
+                    'msg' => 'Data retrieved',
+                    'data' => $pengembalian
+                ], 200);
+            }
+            return response()->json([
+                'msg' => 'Data Tidak Ada'
+            ], 404);
+        } else {
+            $pengembalian =  Peminjaman::where('done', true)->get();
+            if (count($pengembalian)) {
+                return response()->json([
+                    'msg' => 'Data retrieved',
+                    'data' => $pengembalian
+                ], 200);
+            }
+            return response()->json([
+                'msg' => 'Data Tidak Ada'
+            ], 404);
+        }
     }
 
-    public function pengembalian_form()
+    public function store(Request $request)
     {
-        $pengembalian = Peminjaman::where('user_id', Auth::user()->id)->whereNotNull('tanggal_peminjaman')->where('done', false)->get();
-
-        return view('user.pengembalian.form_pengembalian', compact('pengembalian'));
-    }
-
-    public function submit_pengembalian(Request $request)
-    {
-        $cek = Peminjaman::where('user_id', Auth::user()->id)
+        $cek = Peminjaman::where('user_id', $request->user_id)
             ->where('buku_id', $request->buku_id)
             ->where('done', false)
             ->first();
 
         if (!$cek) {
-            return redirect()->route('user.pengembalian')->with('status_pengembalian', 'danger')->with('message', "Gagal Mengembalikan buku");
+            return response()->json([
+                'msg' => 'Gagal Mengembalikan, Buku yang Dipinjam Tidak Ada'
+            ], 400);
         }
 
-        $info_buku = Buku::where('id', $request->buku_id)->first();
-        $info_anggota = User::find(Auth::user()->id);
+        $info_buku = Buku::find($request->buku_id);
+        $info_anggota = User::find($request->user_id);
 
         Pemberitahuan::create([
             'isi' => 'Buku ' . $info_buku->judul . ' pada kategori ' . $info_buku->kategori->nama . ' telah dikembalikan oleh ' . $info_anggota->fullname,
@@ -54,7 +69,7 @@ class Pengembalian extends Controller
         ]);
 
         if ($request->kondisi_buku_saat_dikembalikan == 'baik' && $cek->kondisi_buku_saat_dipinjam == "baik" && $cek->denda == null) {
-            $buku = Buku::where('id', $request->buku_id)->first();
+            $buku = Buku::find($request->buku_id);
 
             $buku->update([
                 'j_buku_baik' => $buku->j_buku_baik + 1
@@ -66,7 +81,7 @@ class Pengembalian extends Controller
         }
 
         if ($request->kondisi_buku_saat_dikembalikan == 'buruk' && $cek->kondisi_buku_saat_dipinjam == 'baik') {
-            $buku = Buku::where('id', $request->buku_id)->first();
+            $buku = Buku::find($request->buku_id);
 
             $buku->update([
                 'j_buku_buruk' => $buku->j_buku_buruk + 1
@@ -78,10 +93,10 @@ class Pengembalian extends Controller
         }
 
         if ($request->kondisi_buku_saat_dikembalikan == 'baik' && $cek->kondisi_buku_saat_dipinjam == 'buruk') {
-            $buku = Buku::where('id', $request->buku_id)->first();
+            $buku = Buku::find($request->buku_id);
 
             $buku->update([
-                'j_buku_buruk' => $buku->j_buku_buruk + 1
+                'j_buku_rusak' => $buku->j_buku_rusak + 1
             ]);
 
             $cek->update([
@@ -91,10 +106,10 @@ class Pengembalian extends Controller
         }
 
         if ($request->kondisi_buku_saat_dikembalikan == 'buruk' && $cek->kondisi_buku_saat_dipinjam == 'buruk') {
-            $buku = Buku::where('id', $request->buku_id)->first();
+            $buku = Buku::find($request->buku_id);
 
             $buku->update([
-                'j_buku_buruk' => $buku->j_buku_buruk + 1
+                'j_buku_rusak' => $buku->j_buku_rusak + 1
             ]);
 
             $cek->update([
@@ -109,6 +124,9 @@ class Pengembalian extends Controller
             ]);
         }
 
-        return redirect()->route('user.pengembalian')->with('status_pengembalian', 'success')->with('message', 'Berhasil Mengembalikan Buku');
+        return response()->json([
+            'msg' => 'Berhasil Mengembalikan Buku',
+            'data' => $cek
+        ], 200);
     }
 }

@@ -1,12 +1,14 @@
 @php
     use App\Models\Pemberitahuan;
     $pemberitahuans = Pemberitahuan::where('status', 'aktif')
-        ->orWhere('status', 'admin')
+        ->orWhere('status', 'user')
         ->get();
     
     if (!count($pemberitahuans) > 0) {
+        $class = null;
         $info_notif = 'Tidak Ada Notifikasi';
     } elseif (count($pemberitahuans) > 3) {
+        $class = 'notification-item';
         $info_notif = 'Ada Banyak Notifikasi';
     } else {
         null;
@@ -17,7 +19,7 @@
 @if (!isset($info_notif))
     @foreach ($pemberitahuans as $pemberitahuan)
         <li class="dropdown-item notification-item">
-            <a class="d-flex align-items-center" href="{{ route('admin.pemberitahuan_admin') }}">
+            <a class="d-flex align-items-center" href="{{ route('user.pemberitahuan_user') }}">
                 @if ($pemberitahuan->status === 'aktif')
                     <span class="btn icon btn-primary"><i class="bi bi-info-circle"></i></span>
                 @else
@@ -36,8 +38,9 @@
         </li>
     @endforeach
 @else
-    <li class="dropdown-item notification-item">
-        <a class="d-flex align-items-center" href="{{ route('admin.pemberitahuan_admin') }}">
+    <li class="dropdown-item {{ isset($class) ? $class : null }}">
+        <a class="d-flex align-items-center {{ isset($class) ? $class : 'text-gray-600' }}"
+            href="{{ route('user.pemberitahuan_user') }}">
             {{ $info_notif }}
         </a>
     </li>

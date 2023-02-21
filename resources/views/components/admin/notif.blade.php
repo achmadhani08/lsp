@@ -5,8 +5,10 @@
         ->get();
     
     if (!count($pemberitahuans) > 0) {
+        $class = null;
         $info_notif = 'Tidak Ada Notifikasi';
     } elseif (count($pemberitahuans) > 3) {
+        $class = 'notification-item';
         $info_notif = 'Ada Banyak Notifikasi';
     } else {
         null;
@@ -36,8 +38,9 @@
         </li>
     @endforeach
 @else
-    <li class="dropdown-item notification-item">
-        <a class="d-flex align-items-center" href="{{ route('admin.pemberitahuan_admin') }}">
+    <li class="dropdown-item {{ isset($class) ? $class : null }}">
+        <a class="d-flex align-items-center {{ isset($class) ? $class : 'text-gray-600' }}"
+            href="{{ route('admin.pemberitahuan_admin') }}">
             {{ $info_notif }}
         </a>
     </li>

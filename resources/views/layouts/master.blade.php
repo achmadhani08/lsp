@@ -113,7 +113,7 @@
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                                         <li class="dropdown-header">
-                                            <h6>Mail</h6>
+                                            <h6>Pesan</h6>
                                         </li>
                                         @if (Auth::user()->role == 'admin')
                                             @include('components.admin.message')
@@ -130,7 +130,7 @@
                                     <ul class="dropdown-menu dropdown-menu-end notification-dropdown"
                                         aria-labelledby="dropdownMenuButton" style="min-width: 10rem !important">
                                         <li class="dropdown-header">
-                                            <h6>Notifications</h6>
+                                            <h6>Notifikasi</h6>
                                         </li>
                                         @if (Auth::user()->role == 'admin')
                                             @include('components.admin.notif')

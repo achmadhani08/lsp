@@ -16,11 +16,27 @@ class APIPeminjamanController extends Controller
     public function get($id = null)
     {
         if (isset($id)) {
-            $peminjaman = Peminjaman::findOrFail($id);
-            return response()->json(['msg' => 'Data retrieved', 'data' => $peminjaman], 200);
+            $peminjaman =  Peminjaman::where(['user_id' => $id, 'done' => false])->get();
+            if (count($peminjaman)) {
+                return response()->json([
+                    'msg' => 'Data retrieved',
+                    'data' => $peminjaman
+                ], 200);
+            }
+            return response()->json([
+                'msg' => 'Data Tidak Ada'
+            ], 404);
         } else {
-            $peminjamans = Peminjaman::get();
-            return response()->json(['msg' => 'Data retrieved', 'data' => $peminjamans], 200);
+            $peminjaman =  Peminjaman::where('done', false)->get();
+            if (count($peminjaman)) {
+                return response()->json([
+                    'msg' => 'Data retrieved',
+                    'data' => $peminjaman
+                ], 200);
+            }
+            return response()->json([
+                'msg' => 'Data Tidak Ada'
+            ], 404);
         }
     }
 

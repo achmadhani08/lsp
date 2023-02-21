@@ -16,12 +16,12 @@ class DataBuku extends Controller
     public function penerbit()
     {
         $penerbits = Penerbit::all();
-        return view('admin.penerbit', compact('penerbits'));
+        return view('admin.data_buku.penerbit', compact('penerbits'));
     }
     public function kategori()
     {
         $kategoris = Kategori::all();
-        return view('admin.kategori', compact('kategoris'));
+        return view('admin.data_buku.kategori', compact('kategoris'));
     }
     public function buku()
     {
@@ -29,7 +29,7 @@ class DataBuku extends Controller
         $kategoris = Kategori::all();
         $penerbits = Penerbit::all();
 
-        return view('admin.buku', compact('bukus', 'kategoris', 'penerbits'));
+        return view('admin.data_buku.buku', compact('bukus', 'kategoris', 'penerbits'));
     }
 
     // Store Data
@@ -167,6 +167,7 @@ class DataBuku extends Controller
     }
     public function update_buku(Request $request, $id)
     {
+        // dd($request->all());
         if ($request->photo != null) {
             $imageName = time() . '.' . $request->photo->extension();
 
@@ -185,7 +186,9 @@ class DataBuku extends Controller
             }
             return redirect()->back()->with("status", "danger")->with('message', 'Gagal Mengubah Buku');
         }
-        $buku = Buku::find($id)->update($request->all());
+        // dd($request->all());
+        $buku = Buku::find($id);
+        $buku->update($request->all());
 
         if ($buku) {
             return redirect()->back()->with("status", "success")->with(

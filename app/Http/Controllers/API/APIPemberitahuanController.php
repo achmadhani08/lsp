@@ -35,7 +35,7 @@ class APIPemberitahuanController extends Controller
         $pemberitahuan = Pemberitahuan::create($request->all());
         return response()->json(['msg' => 'Data created', 'data' => $pemberitahuan], 201);
 
-        // fillable : isi texxt, level_user str (nullable), status enum[terkirim, dibaca] (nullable)
+        // fillable : isi text, level_user str (nullable), status enum[aktif, nonaktif, user, admin], buku_id id (nullable), kategori_id id (nullable)
     }
 
     /**

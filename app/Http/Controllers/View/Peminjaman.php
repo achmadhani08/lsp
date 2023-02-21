@@ -7,6 +7,7 @@ use App\Models\Buku;
 use App\Models\Pemberitahuan;
 use App\Models\Peminjaman as ModelsPeminjaman;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,6 +43,16 @@ class Peminjaman extends Controller
         $kondisi_buku_saat_dipinjam = $request->kondisi_buku_saat_dipinjam;
         $user_id = $request->user_id;
 
+        // $DeferenceInDays = Carbon::parse(Carbon::now())->diffInDays($dataToCompare); // selisih waktu dari tanggal hari ini dengan input tanggal
+        // $futureDate = Carbon::parse($tanggal_peminjaman)->addDays(7); // 7 hari dari input tanggal
+        // $pastDate = Carbon::parse($tanggal_peminjaman)->subDays(7); // tanggal dari 7 hari ke belakang
+        // $cek = ModelsPeminjaman::where(['user_id' => $user_id, 'buku_id' => $buku_id, 'done' => false])->whereBetween('created_at', [$pastDate, Carbon::now()])->get();
+        // $cek = ModelsPeminjaman::where(['user_id' => $user_id, 'buku_id' => $buku_id, 'done' => false])->get(); // cek apakah sedang meminjam buku yang sama
+        // if (count($cek)) {
+        // dd('Anda sudah meminjam buku ini, kembalikan terlebih dahulu');
+        // } else {
+        //     dd('Berhasil pinjam buku');
+        // }
         try {
             $create = ModelsPeminjaman::create([
                 "tanggal_peminjaman" => $tanggal_peminjaman,
@@ -56,7 +67,7 @@ class Peminjaman extends Controller
             $buku = Buku::find($buku_id);
 
             if ($create) {
-                Pemberitahuan::create([
+                $pemberitahuan = Pemberitahuan::create([
                     'isi' => 'Buku ' . $buku->judul . ' pada kategori ' . $buku->kategori->nama . ' telah dipinjam oleh ' . $anggota->fullname,
                     'buku_id' => $buku->id,
                     'kategori_id' => $buku->kategori_id,
@@ -64,26 +75,36 @@ class Peminjaman extends Controller
                 ]);
             }
 
-            if ($buku->j_buku_baik >= 1 || $buku->j_buku_buruk >= 1) {
-                if ($request->kondisi_buku_saat_dipinjam == 'baik') {
+            if ($buku->j_buku_baik > 0 && $request->kondisi_buku_saat_dipinjam == 'baik') {
 
-                    $buku = Buku::where('id', $request->buku_id)->first();
+                $buku = Buku::where('id', $request->buku_id)->first();
 
-                    $buku->update([
-                        'j_buku_baik' => $buku->j_buku_baik - 1
+                $buku->update([
+                    'j_buku_baik' => $buku->j_buku_baik - 1
 
-                    ]);
-                }
+                ]);
 
-                if ($request->kondisi_buku_saat_dipinjam == 'buruk') {
-                    $buku = Buku::where('id', $request->buku_id)->first();
-
-                    $buku->update([
-                        'j_buku_buruk' => $buku->j_buku_buruk - 1
-                    ]);
-                }
                 return redirect()->route('user.peminjaman')->with('status', 'success')->with('message', 'Berhasil Meminjam Buku');
             } else {
+                $fail = ModelsPeminjaman::find($create->id);
+                $fail->delete();
+                $failMessage = Pemberitahuan::find($pemberitahuan->id);
+                $failMessage->delete();
+                return redirect()->route('user.peminjaman')->with('status', 'danger')->with('message', "Gagal Meminjam Buku Stock Habis");
+            }
+
+            if ($buku->j_buku_buruk > 0 && $request->kondisi_buku_saat_dipinjam == 'buruk') {
+                $buku = Buku::where('id', $request->buku_id)->first();
+
+                $buku->update([
+                    'j_buku_buruk' => $buku->j_buku_buruk - 1
+                ]);
+                return redirect()->route('user.peminjaman')->with('status', 'success')->with('message', 'Berhasil Meminjam Buku');
+            } else {
+                $fail = ModelsPeminjaman::find($create->id);
+                $fail->delete();
+                $failMessage = Pemberitahuan::find($pemberitahuan->id);
+                $failMessage->delete();
                 return redirect()->route('user.peminjaman')->with('status', 'danger')->with('message', "Gagal Meminjam Buku Stock Habis");
             }
         } catch (Exception $e) {

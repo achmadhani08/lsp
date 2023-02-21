@@ -158,7 +158,6 @@ Route::group(
                                     'laporan_peminjaman'
                                 )->name('admin.laporan_peminjaman');
                                 Route::post('/peminjaman/cetak-pdf', 'peminjaman_pdf')->name('admin.peminjaman_pdf');
-                                Route::post('/peminjaman/cetak-excel', 'peminjaman_excel')->name('admin.peminjaman_excel');
 
                                 // Pengembalian
                                 Route::get(
@@ -166,7 +165,6 @@ Route::group(
                                     'laporan_pengembalian'
                                 )->name('admin.laporan_pengembalian');
                                 Route::post('/pengembalian/cetak-pdf', 'pengembalian_pdf')->name('admin.pengembalian_pdf');
-                                Route::post('/pengembalian/cetak-excel', 'pengembalian_excel')->name('admin.pengembalian_excel');
 
                                 // Anggota
                                 Route::get(
@@ -174,7 +172,6 @@ Route::group(
                                     'laporan_anggota'
                                 )->name('admin.laporan_anggota');
                                 Route::post('/anggota/cetak-pdf', 'anggota_pdf')->name('admin.anggota_pdf');
-                                Route::post('/anggota/cetak-excel', 'anggota_excel')->name('admin.anggota_excel');
                             }
                         );
 

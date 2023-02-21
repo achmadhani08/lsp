@@ -92,6 +92,9 @@ class APIUserController extends Controller
                 }
             }
             $admin = User::create($request->all());
+            $admin->update([
+                'kode' => $generate_code
+            ]);
 
             if ($admin) {
                 return response()->json(['msg' => 'Data created', 'data' => $admin], 201);
@@ -152,6 +155,9 @@ class APIUserController extends Controller
                 }
             }
             $user = User::create($request->all());
+            $user->update([
+                'kode' => $generate_code
+            ]);
 
             if ($user) {
                 return response()->json(['msg' => 'Data created', 'data' => $user], 201);

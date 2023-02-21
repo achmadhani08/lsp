@@ -18,8 +18,11 @@ class APIBukuController extends Controller
     public function get($id = null)
     {
         if (isset($id)) {
-            $buku = Buku::findOrFail($id);
-            return response()->json(['msg' => 'Data retrieved', 'data' => $buku], 200);
+            $buku = Buku::where('id', $id)->get();
+            if (count($buku)) {
+                return response()->json(['msg' => 'Data retrieved', 'data' => $buku], 200);
+            }
+            return response()->json(['msg' => 'Data Not Found'], 404);
         } else {
             $buku = Buku::get();
             return response()->json(['msg' => 'Data retrieved', 'data' => $buku], 200);

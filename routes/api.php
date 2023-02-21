@@ -3,9 +3,11 @@
 use App\Http\Controllers\API\APIBukuController;
 use App\Http\Controllers\API\APIIdentitasController;
 use App\Http\Controllers\API\APIKategoriController;
+use App\Http\Controllers\API\APILaporanController;
 use App\Http\Controllers\API\APIPemberitahuanController;
 use App\Http\Controllers\API\APIPeminjamanController;
 use App\Http\Controllers\API\APIPenerbitController;
+use App\Http\Controllers\API\APIPengembalianController;
 use App\Http\Controllers\API\APIPesanController;
 use App\Http\Controllers\API\APIUserController;
 use Illuminate\Http\Request;
@@ -23,13 +25,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth:sanctum', 'role:admin'])->group(
+// Log Out
+Route::middleware(['auth:sanctum'])->group(
     function () {
-        //LogOut
         Route::post('logout', [APIUserController::class, 'logout']);
     }
 );
 
+// User
 Route::controller(APIUserController::class)->group(
     function () {
         Route::post('login', 'login');
@@ -43,6 +46,7 @@ Route::controller(APIUserController::class)->group(
     }
 );
 
+// Kategori
 Route::controller(APIKategoriController::class)->group(
     function () {
         Route::get('kategori', 'get');
@@ -53,6 +57,7 @@ Route::controller(APIKategoriController::class)->group(
     }
 );
 
+// Buku
 Route::controller(APIBukuController::class)->group(
     function () {
         Route::get('buku', 'get');
@@ -63,6 +68,7 @@ Route::controller(APIBukuController::class)->group(
     }
 );
 
+// Peminjaman
 Route::controller(APIPeminjamanController::class)->group(
     function () {
         Route::get('peminjaman', 'get');
@@ -73,6 +79,30 @@ Route::controller(APIPeminjamanController::class)->group(
     }
 );
 
+// Pengembalian
+Route::controller(APIPengembalianController::class)->group(
+    function () {
+        Route::get('pengembalian', 'get');
+        Route::get('pengembalian/{id}', 'get');
+        Route::put('pengembalian', 'store');
+    }
+);
+
+// Laporan
+Route::controller(APILaporanController::class)->group(
+    function () {
+        // Anggota
+        Route::post('laporan/anggota', 'anggota');
+
+        // Peminjaman
+        Route::post('laporan/peminjaman', 'peminjaman');
+
+        // Pengembalian
+        Route::post('laporan/pengembalian', 'pengembalian');
+    }
+);
+
+// Penerbit
 Route::controller(APIPenerbitController::class)->group(
     function () {
         Route::get('penerbit',  'get');
@@ -83,6 +113,7 @@ Route::controller(APIPenerbitController::class)->group(
     }
 );
 
+// Pesan
 Route::controller(APIPesanController::class)->group(
     function () {
         Route::get('pesan', 'get');
@@ -93,6 +124,7 @@ Route::controller(APIPesanController::class)->group(
     }
 );
 
+// Pemberitahuan
 Route::controller(APIPemberitahuanController::class)->group(
     function () {
         Route::get('pemberitahuan', 'get');
@@ -103,6 +135,7 @@ Route::controller(APIPemberitahuanController::class)->group(
     }
 );
 
+// Identitas
 Route::controller(APIIdentitasController::class)->group(
     function () {
         Route::get('identitas',  'get');

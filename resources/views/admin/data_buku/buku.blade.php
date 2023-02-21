@@ -204,8 +204,8 @@
                                     </div>
                                     <div class="d-flex mb-3 gap-3 justify-content-center">
                                         <div>
-                                            <select name="kategori_id" required class="form-select choices">
-                                                <option hidden>Kategori</option>
+                                            <select name="kategori_id" required class="form-select">
+                                                <option selected hidden>Kategori</option>
                                                 @foreach ($kategoris as $kategori)
                                                     <option value="{{ $kategori->id }}"
                                                         {{ isset($kategori_id) ? ($kategori_id == $kategori->id ? 'selected' : '') : '' }}>
@@ -215,8 +215,8 @@
                                             </select>
                                         </div>
                                         <div>
-                                            <select name="penerbit_id" required class="form-select choices">
-                                                <option hidden>Penerbit</option>
+                                            <select name="penerbit_id" required class="form-select">
+                                                <option selected hidden>Penerbit</option>
                                                 @foreach ($penerbits as $penerbit)
                                                     <option value="{{ $penerbit->id }}"
                                                         {{ isset($penerbit_id) ? ($penerbit_id == $penerbit->id ? 'selected' : '') : '' }}>

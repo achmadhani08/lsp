@@ -78,20 +78,4 @@ class Laporan extends Controller
 
         return $pdf->download('laporan-anggota-' . $anggota->username . '.pdf');
     }
-
-    // Export Excel
-    // public function anggota_excel(Request $request)
-    // {
-    //     $anggota = User::find($request->user_id);
-
-    //     return Excel::download(new LaporanAnggota($request), 'laporan-anggota-' . $anggota->username . '.xlsx');
-    // }
-    // public function peminjaman_excel(Request $request)
-    // {
-    //     return Excel::download(new LaporanPeminjaman($request), 'peminjaman.xlsx');
-    // }
-    // public function pengembalian_excel(Request $request)
-    // {
-    //     return Excel::download(new LaporanPengembalian($request), 'pengembalian.xlsx');
-    // }
 }
